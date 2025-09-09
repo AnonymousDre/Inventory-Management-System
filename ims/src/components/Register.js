@@ -2,7 +2,7 @@ import { useState } from "react";
 import api from "../services/api";
 
 export default function Register() {
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [form, setForm] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
@@ -24,7 +24,6 @@ export default function Register() {
       <h2>Register</h2>
       <form onSubmit={handleSubmit}>
         <input name="username" placeholder="Username" onChange={handleChange} />
-        <input name="email" placeholder="Email" onChange={handleChange} />
         <input type="password" name="password" placeholder="Password" onChange={handleChange} />
         <button type="submit">Register</button>
       </form>
