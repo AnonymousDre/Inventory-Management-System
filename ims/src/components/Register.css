@@ -1,0 +1,362 @@
+/* Import grunge/military fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+.military-register-container {
+  position: relative;
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.camouflage-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, #2d5016 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, #1a3009 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, #3d6b1a 0%, transparent 50%),
+    radial-gradient(circle at 60% 40%, #2a4a0f 0%, transparent 50%),
+    radial-gradient(circle at 90% 70%, #1e3a0b 0%, transparent 50%),
+    radial-gradient(circle at 10% 90%, #4a7a20 0%, transparent 50%),
+    linear-gradient(45deg, #1a3009 0%, #2d5016 25%, #3d6b1a 50%, #2a4a0f 75%, #1e3a0b 100%);
+  background-size: 200px 200px, 300px 300px, 250px 250px, 180px 180px, 220px 220px, 280px 280px, 100% 100%;
+  animation: camouflageShift 20s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes camouflageShift {
+  0%, 100% { 
+    background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%; 
+  }
+  25% { 
+    background-position: 50px 30px, -30px 20px, 40px -20px, -20px 40px, 30px 50px, -40px 10px, 0% 0%; 
+  }
+  50% { 
+    background-position: -20px 60px, 60px -40px, -30px 30px, 50px -20px, -10px 40px, 20px -30px, 0% 0%; 
+  }
+  75% { 
+    background-position: 40px -10px, -50px 30px, 20px 50px, -40px -30px, 60px 20px, -20px 40px, 0% 0%; 
+  }
+}
+
+.register-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 500px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo-container {
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.military-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 4rem;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 
+    3px 3px 0px #8b4513,
+    6px 6px 0px #654321,
+    9px 9px 0px #2d5016,
+    12px 12px 20px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin: 0;
+  position: relative;
+  animation: logoGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes logoGlow {
+  0% {
+    text-shadow: 
+      3px 3px 0px #8b4513,
+      6px 6px 0px #654321,
+      9px 9px 0px #2d5016,
+      12px 12px 20px rgba(0, 0, 0, 0.8),
+      0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  100% {
+    text-shadow: 
+      3px 3px 0px #8b4513,
+      6px 6px 0px #654321,
+      9px 9px 0px #2d5016,
+      12px 12px 20px rgba(0, 0, 0, 0.8),
+      0 0 40px rgba(255, 215, 0, 0.6),
+      0 0 60px rgba(255, 215, 0, 0.3);
+  }
+}
+
+.register-form-container {
+  background: rgba(0, 0, 0, 0.8);
+  border: 3px solid #ffd700;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 
+    0 0 30px rgba(255, 215, 0, 0.3),
+    inset 0 0 20px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.register-form-container::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700, #b8860b);
+  border-radius: 12px;
+  z-index: -1;
+  animation: borderGlow 2s linear infinite;
+}
+
+@keyframes borderGlow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.form-header {
+  margin-bottom: 2rem;
+}
+
+.form-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #ffd700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  margin: 0 0 1rem 0;
+  letter-spacing: 0.1em;
+}
+
+.military-divider {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  margin: 0 auto;
+  width: 60%;
+}
+
+.military-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-group {
+  text-align: left;
+}
+
+.input-label {
+  display: block;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffd700;
+  margin-bottom: 0.5rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.05em;
+}
+
+.military-input {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid #ffd700;
+  border-radius: 5px;
+  color: #ffffff;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.military-input:focus {
+  outline: none;
+  border-color: #ffed4e;
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.5),
+    inset 0 0 10px rgba(255, 215, 0, 0.1);
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.military-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.military-button {
+  position: relative;
+  background: linear-gradient(45deg, #2d5016, #3d6b1a, #2d5016);
+  border: 2px solid #ffd700;
+  border-radius: 5px;
+  padding: 1rem 2rem;
+  color: #ffd700;
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.military-button:hover {
+  background: linear-gradient(45deg, #3d6b1a, #4a7a20, #3d6b1a);
+  box-shadow: 
+    0 0 20px rgba(255, 215, 0, 0.4),
+    inset 0 0 20px rgba(255, 215, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.military-button:active {
+  transform: translateY(0);
+}
+
+.button-text {
+  position: relative;
+  z-index: 2;
+}
+
+.button-accent {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.military-button:hover .button-accent {
+  left: 100%;
+}
+
+.message {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  border-radius: 5px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  text-align: center;
+}
+
+.message.success {
+  background: rgba(0, 100, 0, 0.8);
+  color: #90ee90;
+  border: 1px solid #00ff00;
+}
+
+.message.error {
+  background: rgba(139, 0, 0, 0.8);
+  color: #ff6b6b;
+  border: 1px solid #ff0000;
+}
+
+.switch-form {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.switch-text {
+  color: #ffd700;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 1rem 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.switch-button {
+  background: transparent;
+  border: 2px solid #ffd700;
+  border-radius: 5px;
+  padding: 0.8rem 1.5rem;
+  color: #ffd700;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.switch-button:hover {
+  background: rgba(255, 215, 0, 0.1);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+.switch-button:active {
+  transform: translateY(0);
+}
+
+.military-footer {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid #ffd700;
+  border-radius: 5px;
+}
+
+.military-footer p {
+  color: #ffd700;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.05em;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .military-logo {
+    font-size: 2.5rem;
+  }
+  
+  .register-content {
+    padding: 1rem;
+  }
+  
+  .register-form-container {
+    padding: 1.5rem;
+  }
+  
+  .form-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .military-logo {
+    font-size: 2rem;
+  }
+  
+  .military-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .switch-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.8rem;
+  }
+}
