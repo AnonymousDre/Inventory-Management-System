@@ -1,8 +1,7 @@
 import { useState } from "react";
-import api from "../services/api";
 import "./Login.css";
 
-export default function Login({ onSwitchToRegister }) {
+export default function Login({ onSwitchToRegister, onLogin }) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
 
@@ -12,13 +11,38 @@ export default function Login({ onSwitchToRegister }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Static test account for demo purposes
+    const testAccount = {
+      email: "commander@america.com",
+      password: "password123"
+    };
+    
+    // Check if credentials match test account
+    if (form.email === testAccount.email && form.password === testAccount.password) {
+      setMessage("Login successful! Redirecting to command center...");
+      console.log("Logged in user: Commander");
+      // Simulate successful login and redirect to dashboard
+      setTimeout(() => {
+        if (onLogin) onLogin();
+      }, 1500);
+    } else {
+      setMessage("Invalid credentials. Use: commander@america.com / password123");
+    }
+    
+    // Original API call (commented out for now)
+    /*
     try {
       const res = await api.post("/login", form);
       setMessage(res.data.message);
       console.log("Logged in user:", res.data.user);
+      setTimeout(() => {
+        if (onLogin) onLogin();
+      }, 1000);
     } catch (err) {
       setMessage(err.response?.data?.error || "Login failed");
     }
+    */
   };
 
   return (
@@ -83,9 +107,14 @@ export default function Login({ onSwitchToRegister }) {
           </div>
         </div>
         
-        <div className="military-footer">
-          <p>CLASSIFIED SYSTEM - AUTHORIZED PERSONNEL ONLY</p>
-        </div>
+          <div className="military-footer">
+            <p>CLASSIFIED SYSTEM - AUTHORIZED PERSONNEL ONLY</p>
+            <div className="test-credentials">
+              <p><strong>TEST CREDENTIALS:</strong></p>
+              <p>Email: commander@america.com</p>
+              <p>Password: password123</p>
+            </div>
+          </div>
       </div>
     </div>
   );

@@ -1,8 +1,7 @@
 import { useState } from "react";
-import api from "../services/api";
 import "./Register.css";
 
-export default function Register({ onSwitchToLogin }) {
+export default function Register({ onSwitchToLogin, onRegister }) {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [message, setMessage] = useState("");
 
@@ -12,13 +11,40 @@ export default function Register({ onSwitchToLogin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Basic validation for demo purposes
+    if (!form.username || !form.email || !form.password) {
+      setMessage("All fields are required for enlistment");
+      return;
+    }
+    
+    if (form.password.length < 6) {
+      setMessage("Password must be at least 6 characters long");
+      return;
+    }
+    
+    // Simulate successful registration
+    setMessage("Enlistment successful! Welcome to the force, " + form.username + "!");
+    console.log("Registered user:", { username: form.username, email: form.email });
+    
+    // Simulate successful registration and redirect to dashboard
+    setTimeout(() => {
+      if (onRegister) onRegister();
+    }, 1500);
+    
+    // Original API call (commented out for now)
+    /*
     try {
       const res = await api.post("/register", form);
       setMessage(res.data.message);
       console.log("Registered user:", res.data.user);
+      setTimeout(() => {
+        if (onRegister) onRegister();
+      }, 1000);
     } catch (err) {
       setMessage(err.response?.data?.error || "Registration failed");
     }
+    */
   };
 
   return (

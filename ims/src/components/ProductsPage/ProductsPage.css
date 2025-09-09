@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+.military-products-container {
+  position: relative;
+  min-height: 100vh;
+  padding: 2rem;
+  z-index: 1;
+}
+
+.dashboard-camouflage {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 50%, #2d5016 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, #1a3009 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, #3d6b1a 0%, transparent 50%),
+    radial-gradient(circle at 60% 40%, #2a4a0f 0%, transparent 50%),
+    radial-gradient(circle at 90% 70%, #1e3a0b 0%, transparent 50%),
+    radial-gradient(circle at 10% 90%, #4a7a20 0%, transparent 50%),
+    linear-gradient(45deg, #1a3009 0%, #2d5016 25%, #3d6b1a 50%, #2a4a0f 75%, #1e3a0b 100%);
+  background-size: 200px 200px, 300px 300px, 250px 250px, 180px 180px, 220px 220px, 280px 280px, 100% 100%;
+  animation: camouflageShift 20s ease-in-out infinite;
+  opacity: .25;
+  z-index: 0;
+}
+
+@keyframes camouflageShift {
+  0%, 100% { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%; }
+  50% { background-position: 40px 40px, -30px 20px, 30px -30px, -30px 30px, 20px 40px, -40px 20px, 0% 0%; }
+}
+
+.products-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.products-title {
+  font-family: 'Orbitron', monospace;
+  color: #ffd700;
+  font-size: 1.6rem;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,.8);
+}
+
+.controls-row {
+  display: flex;
+  gap: .75rem;
+}
+
+.search-input, .filter-select {
+  background: rgba(0,0,0,.7);
+  border: 2px solid #ffd700;
+  color: #fff;
+  border-radius: 6px;
+  padding: .7rem .9rem;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.add-button {
+  background: linear-gradient(45deg, #2d5016, #3d6b1a);
+  border: 2px solid #ffd700;
+  color: #ffd700;
+  border-radius: 6px;
+  padding: .7rem 1rem;
+  font-family: 'Orbitron', monospace;
+  cursor: pointer;
+}
+
+.products-sections { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 2rem; }
+
+.category-section { background: rgba(0,0,0,.6); border: 2px solid rgba(255,215,0,.3); border-radius: 10px; padding: 1rem; }
+
+.category-title { font-family:'Orbitron', monospace; color:#ffd700; margin:0 0 1rem 0; font-size:1.2rem; text-shadow:2px 2px 4px rgba(0,0,0,.8); }
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.product-card {
+  background: rgba(0,0,0,.82);
+  border: 2px solid #ffd700;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+}
+
+.product-card .restricted-banner {
+  position: absolute;
+  top: 10px;
+  right: -40px;
+  transform: rotate(35deg);
+  background: #8b0000;
+  color: #fff;
+  padding: .3rem 1.2rem;
+  font-family: 'Orbitron', monospace;
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 15px rgba(255,215,0,.3);
+}
+
+.product-badge {
+  width: 120px;
+  display: grid;
+  place-items: center;
+  font-size: 2.6rem;
+  border-right: 2px solid rgba(255,215,0,.3);
+}
+
+.product-body { flex: 1; padding: 1.2rem 1.2rem 1rem 1.2rem; }
+
+.product-header { display:flex; justify-content: space-between; align-items:center; gap:.5rem; }
+
+.product-name {
+  color:#fff;
+  margin:0;
+  font-family:'Orbitron', monospace;
+  font-size:1.1rem;
+}
+
+.category-tag {
+  font-family:'Rajdhani', sans-serif;
+  font-size:.75rem;
+  color:#000;
+  background:#ffd700;
+  padding:.2rem .5rem;
+  border-radius:4px;
+  text-transform:uppercase;
+}
+
+.category-tag.nuclear { background:#ff6b6b; }
+.category-tag.firearm { background:#ffed4e; }
+.category-tag.ammo { background:#90ee90; }
+.category-tag.gear { background:#87cefa; }
+
+.product-meta { display:flex; justify-content:space-between; margin:.5rem 0; color:#ffd700; font-family:'Rajdhani', sans-serif; }
+.sku { opacity:.9; }
+.stock.ok { color:#90ee90; }
+.stock.low { color:#ff6b6b; }
+
+.product-footer { display:flex; justify-content:space-between; align-items:center; margin-top:.5rem; }
+.price { color:#ffd700; font-family:'Orbitron', monospace; font-weight:700; font-size:1.05rem; }
+
+.actions { display:flex; gap:.5rem; }
+.actions .edit, .actions .restock {
+  background: transparent;
+  border: 2px solid #ffd700;
+  color: #ffd700;
+  border-radius: 6px;
+  padding: .5rem .9rem;
+  font-family: 'Orbitron', monospace;
+  cursor: pointer;
+}
+
+.actions .restock { border-color:#00ff9d; color:#00ff9d; }
+
+
