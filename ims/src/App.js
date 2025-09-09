@@ -1,13 +1,19 @@
 import Register from "./components/Register";
 import Login from "./components/Login";
+import "./styles/login.css";
+import "./styles/register.css";
+import { useState } from "react";
 
 function App() {
+  const [showRegister, setShowRegister] = useState(false);
+
   return (
     <div>
-      <h1>User Auth System</h1>
-      <Register />
-      <hr />
-      <Login />
+      {showRegister ? (
+        <Register onShowLogin={() => setShowRegister(false)} />
+      ) : (
+        <Login onShowRegister={() => setShowRegister(true)} />
+      )}
     </div>
   );
 }

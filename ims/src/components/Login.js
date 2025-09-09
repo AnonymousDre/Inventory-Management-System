@@ -1,8 +1,9 @@
 import { useState } from "react";
 import api from "../services/api";
+import "../styles/login.css";
 
-export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+export default function Login({ onShowRegister }) {
+  const [form, setForm] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
@@ -21,14 +22,24 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="login-container">
+      <h2>MRA Defense Inventory</h2>
+      <form className="login-form" onSubmit={handleSubmit}>
         <input name="username" placeholder="Username" onChange={handleChange} />
         <input type="password" name="password" placeholder="Password" onChange={handleChange} />
         <button type="submit">Login</button>
       </form>
-      {message && <p>{message}</p>}
+            <a
+        href="#"
+        className="link-button"
+        onClick={(e) => {
+          e.preventDefault();
+          onShowRegister();
+        }}
+      >
+        Create account
+      </a>
+      {message && <p className="message">{message}</p>}
     </div>
   );
 }
