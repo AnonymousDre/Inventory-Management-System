@@ -3,7 +3,11 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import DashBoardPage from "./components/DashBoardPage/DashBoardPage";
 import ProductsPage from "./components/ProductsPage/ProductsPage";
+import OrdersPage from "./components/OrdersPage/OrdersPage"; 
 import Sidebar from "./components/Sidebar/Sidebar";
+import CustomerPage from "./components/CustomerPage/CustomerPage";
+import AnalyticsPage from "./components/AnalyticsPage/AnalyticsPage";
+import SettingsPage from "./components/SettingsPage/SettingsPage";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("login");
@@ -42,6 +46,11 @@ function App() {
         <div className="main-content">
           {activePage === "dashboard" && <DashBoardPage onLogout={handleLogout} />}
           {activePage === "products" && <ProductsPage />}
+          {activePage === "orders" && <OrdersPage />}
+          {activePage === "customers" && <CustomerPage />}
+          {activePage === "analytics" && <AnalyticsPage />}
+          {activePage === "settings" && <SettingsPage />}
+
         </div>
       </div>
     );

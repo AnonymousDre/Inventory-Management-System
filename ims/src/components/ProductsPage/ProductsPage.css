@@ -4,12 +4,20 @@
   position: relative;
   min-height: 100vh;
   padding: 2rem;
+  width: 100%;
   z-index: 1;
+  /* Ensure full separation from fixed sidebar as a fallback */
+  margin-left: var(--sidebar-width, 280px);
+  background: #0a0a0a; /* prevent white gaps */
+  overflow: hidden;    /* keep background inside page */
 }
 
 .dashboard-camouflage {
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background:
     radial-gradient(circle at 20% 50%, #2d5016 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, #1a3009 0%, transparent 50%),
@@ -20,8 +28,9 @@
     linear-gradient(45deg, #1a3009 0%, #2d5016 25%, #3d6b1a 50%, #2a4a0f 75%, #1e3a0b 100%);
   background-size: 200px 200px, 300px 300px, 250px 250px, 180px 180px, 220px 220px, 280px 280px, 100% 100%;
   animation: camouflageShift 20s ease-in-out infinite;
-  opacity: .25;
+  opacity: .35;
   z-index: 0;
+  pointer-events: none;
 }
 
 @keyframes camouflageShift {

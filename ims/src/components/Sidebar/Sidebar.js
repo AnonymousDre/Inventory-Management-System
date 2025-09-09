@@ -52,7 +52,7 @@ export default function Sidebar({ currentPage, onNavigate }) {
       {/* Sidebar Header */}
       <div className="sidebar-header">
         <div className="sidebar-logo">
-          <h2 className="logo-text">TIA</h2>
+          <h2 className="logo-text">A-N</h2>
           <span className="logo-subtitle">COMMAND</span>
         </div>
       </div>

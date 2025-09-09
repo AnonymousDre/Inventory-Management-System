@@ -53,7 +53,7 @@ export default function DashBoardPage({ onLogout }) {
       <header className="dashboard-header">
         <div className="header-content">
           <div className="logo-section">
-            <h1 className="dashboard-logo">THIS IS AMERICA</h1>
+            <h1 className="dashboard-logo">Ammu-Nation</h1>
             <span className="system-status">SYSTEMS ONLINE</span>
           </div>
           <div className="user-section">

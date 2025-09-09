@@ -1,0 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+/* --- Base Container & Background (Reused from Products Page) --- */
+.military-orders-container {
+  position: relative;
+  min-height: 100vh;
+  padding: 2rem;
+  width: 100%;
+  z-index: 1;
+  margin-left: var(--sidebar-width, 280px); /* Assumes sidebar */
+  background: #0a0a0a;
+  overflow: hidden;
+}
+
+.dashboard-camouflage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 20% 50%, #2d5016 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, #1a3009 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, #3d6b1a 0%, transparent 50%),
+    radial-gradient(circle at 60% 40%, #2a4a0f 0%, transparent 50%),
+    radial-gradient(circle at 90% 70%, #1e3a0b 0%, transparent 50%),
+    radial-gradient(circle at 10% 90%, #4a7a20 0%, transparent 50%),
+    linear-gradient(45deg, #1a3009 0%, #2d5016 25%, #3d6b1a 50%, #2a4a0f 75%, #1e3a0b 100%);
+  background-size: 200px 200px, 300px 300px, 250px 250px, 180px 180px, 220px 220px, 280px 280px, 100% 100%;
+  animation: camouflageShift 20s ease-in-out infinite;
+  opacity: .35;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes camouflageShift {
+  0%, 100% { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%; }
+  50% { background-position: 40px 40px, -30px 20px, 30px -30px, -30px 30px, 20px 40px, -40px 20px, 0% 0%; }
+}
+
+/* --- Header & Controls (Reused from Products Page) --- */
+.orders-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.orders-title {
+  font-family: 'Orbitron', monospace;
+  color: #ffd700;
+  font-size: 1.6rem;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,.8);
+}
+
+.controls-row {
+  display: flex;
+  gap: .75rem;
+}
+
+.search-input, .filter-select {
+  background: rgba(0,0,0,.7);
+  border: 2px solid #ffd700;
+  color: #fff;
+  border-radius: 6px;
+  padding: .7rem .9rem;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+/* --- Main Content & Table --- */
+.orders-content {
+  position: relative;
+  z-index: 2;
+}
+
+.table-container {
+  background: rgba(0,0,0,.6);
+  border: 2px solid rgba(255,215,0,.3);
+  border-radius: 10px;
+  padding: 1rem;
+  overflow-x: auto; /* for responsiveness */
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.orders-table thead tr {
+  border-bottom: 2px solid #ffd700;
+}
+
+.orders-table th {
+  font-family: 'Orbitron', monospace;
+  color: #ffd700;
+  padding: .8rem 1rem;
+  text-align: left;
+  font-size: .9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.orders-table tbody tr {
+  border-bottom: 1px solid rgba(255,215,0,.2);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.orders-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.orders-table tbody tr:hover {
+  background-color: rgba(255,215,0,.08);
+}
+
+.orders-table td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+/* --- Status Badges --- */
+.status-badge {
+  padding: .3rem .6rem;
+  border-radius: 4px;
+  font-family: 'Orbitron', monospace;
+  font-size: .75rem;
+  color: #000;
+  text-shadow: 1px 1px 2px rgba(0,0,0,.3);
+}
+
+.status-badge.processing { background-color: #ffc107; }
+.status-badge.shipped { background-color: #17a2b8; color: #fff; }
+.status-badge.delivered { background-color: #28a745; color: #fff; }
+.status-badge.cancelled { background-color: #dc3545; color: #fff; }
+
+/* --- Action Buttons --- */
+.actions .details-btn {
+  background: transparent;
+  border: 2px solid #ffd700;
+  color: #ffd700;
+  border-radius: 6px;
+  padding: .5rem .9rem;
+  font-family: 'Orbitron', monospace;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.actions .details-btn:hover {
+  background: #ffd700;
+  color: #000;
+  box-shadow: 0 0 10px rgba(255,215,0,.5);
+}

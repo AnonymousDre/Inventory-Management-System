@@ -3,8 +3,14 @@
     "",
     "\\ims",
     "\\ims\\src",
-    "\\ims\\src\\components"
+    "\\ims\\src\\components",
+    "\\ims\\src\\components\\AnalyticsPage",
+    "\\ims\\src\\components\\CustomerPage",
+    "\\ims\\src\\components\\DashBoardPage",
+    "\\ims\\src\\components\\OrdersPage",
+    "\\ims\\src\\components\\ProductsPage",
+    "\\ims\\src\\components\\SettingsPage"
   ],
-  "SelectedNode": "\\ims\\src\\setupTests.js",
+  "SelectedNode": "\\ims\\src\\components\\ProductsPage\\ProductsPage.js",
   "PreviewInSolutionExplorer": false
 }

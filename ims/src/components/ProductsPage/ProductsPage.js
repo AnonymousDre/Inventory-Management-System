@@ -18,6 +18,16 @@ export default function ProductsPage() {
         image: "☢️",
       },
       {
+        id: "nuke-003",
+        name: "Strategic Warhead Mk III",
+        category: "nuclear",
+        price: 10000000,
+        stock: 2,
+        sku: "SWMK4-NUC",
+        status: "restricted",
+        image: "☢️",
+      },
+      {
         id: "nuke-002",
         name: "Tactical Nuclear Device",
         category: "nuclear",

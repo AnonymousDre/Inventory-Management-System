@@ -3,10 +3,6 @@
   "WorkspaceRootPath": "E:\\Inventory-Management-System\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Inventory-Management-System\\ims\\src\\components\\ProductsPage\\ProductsPage.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ims\\src\\components\\ProductsPage\\ProductsPage.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Inventory-Management-System\\ims\\src\\components\\Register.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ims\\src\\components\\Register.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
@@ -27,19 +23,6 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "ProductsPage.js",
-              "DocumentMoniker": "E:\\Inventory-Management-System\\ims\\src\\components\\ProductsPage\\ProductsPage.js",
-              "RelativeDocumentMoniker": "ims\\src\\components\\ProductsPage\\ProductsPage.js",
-              "ToolTip": "E:\\Inventory-Management-System\\ims\\src\\components\\ProductsPage\\ProductsPage.js",
-              "RelativeToolTip": "ims\\src\\components\\ProductsPage\\ProductsPage.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-09-09T13:22:50.315Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
               "Title": "Register.js",
               "DocumentMoniker": "E:\\Inventory-Management-System\\ims\\src\\components\\Register.js",
               "RelativeDocumentMoniker": "ims\\src\\components\\Register.js",
@@ -52,7 +35,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "Login.js",
               "DocumentMoniker": "E:\\Inventory-Management-System\\ims\\src\\components\\Login.js",
               "RelativeDocumentMoniker": "ims\\src\\components\\Login.js",
@@ -60,7 +43,8 @@
               "RelativeToolTip": "ims\\src\\components\\Login.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-09-09T04:50:20.048Z"
+              "WhenOpened": "2025-09-09T04:50:20.048Z",
+              "EditorCaption": ""
             }
           ]
         }

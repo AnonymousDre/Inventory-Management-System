@@ -50,7 +50,7 @@ export default function Login({ onSwitchToRegister, onLogin }) {
       <div className="camouflage-background"></div>
       <div className="login-content">
         <div className="logo-container">
-          <h1 className="military-logo">THIS IS AMERICA</h1>
+          <h1 className="military-logo">Ammu-Nation</h1>
         </div>
         
         <div className="login-form-container">
