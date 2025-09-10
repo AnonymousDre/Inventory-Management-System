@@ -1,44 +1,90 @@
 import { useState } from "react";
-import api from "../services/api";
+import { supabase } from "../supabaseClient";
 import "../styles/login.css";
 
-export default function Login({ onShowRegister }) {
-  const [form, setForm] = useState({ username: "", password: "" });
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setMessage(error.message);
+      } else {
+        setMessage("Login successful!");
+      }
+    } catch (err) {
+      setMessage("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleGitHubLogin = async () => {
+    setLoading(true);
+    setMessage("");
+
     try {
-      const res = await api.post("/login", form);
-      setMessage(res.data.message);
-      console.log("Logged in user:", res.data.user);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+      });
+
+      if (error) {
+        setMessage(error.message);
+      }
     } catch (err) {
-      setMessage(err.response?.data?.error || "Login failed");
+      setMessage("An unexpected error occurred");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="login-container">
       <h2>MRA Defense Inventory</h2>
-      <form className="login-form" onSubmit={handleSubmit}>
-        <input name="username" placeholder="Username" onChange={handleChange} />
-        <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-        <button type="submit">Login</button>
+      <form className="login-form" onSubmit={handleEmailLogin}>
+        <input 
+          type="email"
+          placeholder="Email" 
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input 
+          type="password" 
+          placeholder="Password" 
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit" disabled={loading}>
+          {loading ? "Signing in..." : "Sign In"}
+        </button>
       </form>
-            <a
-        href="#"
-        className="link-button"
-        onClick={(e) => {
-          e.preventDefault();
-          onShowRegister();
-        }}
+      
+      <div className="divider">
+        <span>OR</span>
+      </div>
+      
+      <button 
+        className="github-button"
+        onClick={handleGitHubLogin}
+        disabled={loading}
       >
-        Create account
-      </a>
+        {loading ? "Signing in..." : "Sign in with GitHub"}
+      </button>
+      
       {message && <p className="message">{message}</p>}
     </div>
   );
