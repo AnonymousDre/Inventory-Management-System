@@ -1,70 +1,153 @@
-# Getting Started with Create React App
+# Inventory Management System (IMS)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React frontend with Supabase authentication, Express backend, and Azure PostgreSQL.
 
-## Available Scripts
+## Project Structure
 
-In the project directory, you can run:
+```
+ims/
+  src/                  # React app
+  backend/              # Express API + Azure PostgreSQL
+  public/
+  package.json          # Frontend package.json
+  backend/server.js     # Backend entry
+```
 
-### `npm start`
+## Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Node.js 18+
+- Supabase project (URL + anon key)
+- Azure PostgreSQL connection string
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Frontend (React + Supabase Auth)
 
-### `npm test`
+### 1) Install dependencies
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+PowerShell:
+```
+cd ims
+npm install
+```
 
-### `npm run build`
+Ensure `@supabase/supabase-js` is installed. If not:
+```
+npm install @supabase/supabase-js
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 2) Configure Supabase client
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+File: `src/supabaseClient.js`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Set your Supabase URL and anon key:
+```
+const supabaseUrl = "https://YOUR-PROJECT.supabase.co";
+const supabaseKey = "YOUR-ANON-KEY";
+```
 
-### `npm run eject`
+This app uses:
+- Email/password sign in: `supabase.auth.signInWithPassword`
+- GitHub OAuth: `supabase.auth.signInWithOAuth({ provider: 'github' })`
+- Session handling in `App.js` via `getSession()` and `onAuthStateChange()`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 3) Start frontend dev server
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+PowerShell (from `ims` folder):
+```
+npm start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+App will be available at `http://localhost:3000`.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Backend (Express + Azure PostgreSQL + Supabase JWT verification)
 
-## Learn More
+### 1) Environment variables
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Create `ims/backend/.env` with:
+```
+SUPABASE_URL=https://YOUR-PROJECT.supabase.co
+SUPABASE_ANON_KEY=YOUR-ANON-KEY
+AZURE_DATABASE_URL=postgresql://username:password@host:port/database
+PORT=4000
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 2) Install backend dependencies
 
-### Code Splitting
+PowerShell:
+```
+cd ims/backend
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 3) Start backend
 
-### Analyzing the Bundle Size
+Development (auto-reload):
+```
+npm run dev
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Production:
+```
+npm start
+```
 
-### Making a Progressive Web App
+Server runs on `http://localhost:4000`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 4) How Supabase auth is used by backend
 
-### Advanced Configuration
+- Frontend sends API requests with header `Authorization: Bearer <JWT>`
+- Backend middleware validates token against Supabase:
+  - File: `backend/server.js`, function: `verifySupabaseToken`
+  - Calls `GET ${SUPABASE_URL}/auth/v1/user` with `Authorization: Bearer <JWT>` and `apikey: SUPABASE_ANON_KEY`
+  - On success attaches `req.user` and continues; on failure returns `401`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Protected routes include:
+- `GET /api/inventory`
+- `POST /api/inventory`
+- `GET /api/categories`
 
-### Deployment
+Public route:
+- `GET /api/test` (checks DB connectivity)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Connecting Frontend to Backend
 
-### `npm run build` fails to minify
+If calling backend from the frontend, include the Supabase JWT:
+```
+const { data: { session } } = await supabase.auth.getSession();
+const token = session?.access_token;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+fetch('http://localhost:4000/api/inventory', {
+  headers: { Authorization: `Bearer ${token}` }
+});
+```
+
+## PowerShell Tips
+
+- Avoid using `&&` to chain commands. Run them on separate lines instead:
+```
+cd ims
+npm start
+```
+
+## Common Issues
+
+- Missing `@supabase/supabase-js`:
+  - Run `npm install @supabase/supabase-js` inside `ims`
+- 401 Unauthorized from backend:
+  - Ensure frontend includes `Authorization: Bearer <JWT>`
+  - Verify `SUPABASE_URL` and `SUPABASE_ANON_KEY` in backend `.env`
+- Database connection errors:
+  - Verify `AZURE_DATABASE_URL` and SSL settings
+
+## Scripts
+
+Frontend (from `ims`):
+- `npm start` – start React dev server
+- `npm run build` – production build
+
+Backend (from `ims/backend`):
+- `npm run dev` – start with nodemon
+- `npm start` – start production server
+
+## License
+
+Private project.
