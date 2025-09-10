@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export default axios.create({
-  baseURL: "http://localhost:5000/api", // your backend server
+  baseURL: "https://inventory-management-system-sc65.onrender.com", // your backend server
 });
