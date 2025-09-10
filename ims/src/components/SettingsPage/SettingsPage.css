@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+/* --- Base Container & Background (Theme Reuse) --- */
+.military-settings-container {
+  position: relative;
+  min-height: 100vh;
+  padding: 2rem;
+  width: 100%;
+  z-index: 1;
+  margin-left: var(--sidebar-width, 280px);
+  background: #0a0a0a;
+  overflow: hidden;
+}
+
+.dashboard-camouflage {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(circle at 20% 50%, #2d5016 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, #1a3009 0%, transparent 50%),
+    linear-gradient(45deg, #1a3009 0%, #2d5016 100%);
+  background-size: 200px 200px, 300px 300px, 100% 100%;
+  animation: camouflageShift 20s ease-in-out infinite;
+  opacity: .35;
+  z-index: -1;
+}
+
+@keyframes camouflageShift {
+  0%, 100% { background-position: 0% 0%, 0% 0%, 0% 0%; }
+  50% { background-position: 40px 40px, -30px 20px, 0% 0%; }
+}
+
+/* --- Header (Theme Reuse) --- */
+.settings-header {
+  position: relative; z-index: 2; margin-bottom: 1.5rem;
+}
+
+.settings-title {
+  font-family: 'Orbitron', monospace; color: #ffd700; font-size: 1.6rem;
+  margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,.8);
+}
+
+/* --- Main Layout --- */
+.settings-layout {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.settings-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 200px;
+}
+
+.tab-btn {
+  width: 100%;
+  background: rgba(0,0,0,.6);
+  border: 2px solid rgba(255,215,0,.3);
+  color: #ffd700;
+  padding: 1rem;
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: rgba(255,215,0,.2);
+  border-color: #ffd700;
+}
+
+.tab-btn.active {
+  background: #ffd700;
+  color: #000;
+  border-color: #ffd700;
+}
+
+.settings-panel {
+  flex: 1;
+  background: rgba(0,0,0,.6);
+  border: 2px solid rgba(255,215,0,.3);
+  border-radius: 10px;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-section {
+  padding: 1.5rem 2rem;
+  flex-grow: 1;
+}
+
+.section-title {
+  font-family: 'Orbitron', monospace; color: #ffd700;
+  margin: 0 0 1.5rem 0; font-size: 1.2rem;
+  border-bottom: 1px solid rgba(255,215,0,.3);
+  padding-bottom: .8rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  font-family: 'Rajdhani', sans-serif;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.settings-input, .settings-select {
+  background: rgba(0,0,0,.7);
+  border: 2px solid #ffd700;
+  color: #fff;
+  border-radius: 6px;
+  padding: .7rem .9rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+}
+
+.form-group.toggle {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0,0,0,.4);
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+/* --- Custom Toggle Switch --- */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #333;
+  border: 2px solid #ffd700;
+  border-radius: 34px;
+  transition: .4s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
+  background-color: #ffd700;
+  border-radius: 50%;
+  transition: .4s;
+}
+input:checked + .slider {
+  background-color: #2d5016;
+}
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Action Bar */
+.action-bar {
+  border-top: 2px solid rgba(255,215,0,.3);
+  padding: 1rem 2rem;
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  background: rgba(0,0,0,.3);
+}
+
+.settings-btn {
+  background: transparent; border: 2px solid #ffd700; color: #ffd700;
+  border-radius: 6px; padding: .7rem 1.2rem; font-family: 'Orbitron', monospace;
+  cursor: pointer; transition: all 0.2s ease;
+}
+.settings-btn.primary { background: #ffd700; color: #000; }
+.settings-btn.secondary { border-color: #87cefa; color: #87cefa; }
+.settings-btn.danger { border-color: #dc3545; color: #dc3545; }
+
+.settings-btn.primary:hover { background: #ffed4e; border-color: #ffed4e; }
+.settings-btn.secondary:hover { background: #87cefa; color: #000; }
+.settings-btn.danger:hover { background: #dc3545; color: #fff; }

@@ -1,0 +1,272 @@
+/* Import grunge/military fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+.military-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width, 280px);
+  height: 100vh;
+  background: #000000; /* solid, non-transparent */
+  border-right: 3px solid #ffd700;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+  z-index: 10; /* keep above backgrounds but below any modals you may add */
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  font-family: 'Rajdhani', sans-serif;
+  box-sizing: border-box;
+}
+
+/* Collapsing disabled: sidebar is always full width */
+
+/* Sidebar Header */
+.sidebar-header {
+  padding: 1.5rem 1rem;
+  border-bottom: 2px solid #ffd700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #000000; /* solid, non-transparent */
+  position: relative;
+}
+
+.sidebar-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+  opacity: 0.1;
+  z-index: -1;
+}
+
+.sidebar-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.logo-text {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 
+    2px 2px 0px #8b4513,
+    4px 4px 0px #654321,
+    6px 6px 0px #2d5016,
+    8px 8px 15px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.1em;
+  margin: 0;
+  animation: logoGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes logoGlow {
+  0% {
+    text-shadow: 
+      2px 2px 0px #8b4513,
+      4px 4px 0px #654321,
+      6px 6px 0px #2d5016,
+      8px 8px 15px rgba(0, 0, 0, 0.8),
+      0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  100% {
+    text-shadow: 
+      2px 2px 0px #8b4513,
+      4px 4px 0px #654321,
+      6px 6px 0px #2d5016,
+      8px 8px 15px rgba(0, 0, 0, 0.8),
+      0 0 30px rgba(255, 215, 0, 0.5),
+      0 0 40px rgba(255, 215, 0, 0.2);
+  }
+}
+
+.logo-subtitle {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  color: #ffd700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.2em;
+  margin-top: 0.2rem;
+}
+
+/* Toggle removed */
+
+/* Navigation */
+.sidebar-nav {
+  flex: 1;
+  padding: 1rem 0;
+  overflow-y: auto;
+}
+
+.nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  margin: 0.5rem 0;
+  padding: 0 1rem;
+}
+
+.nav-button {
+  width: 100%;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 1rem;
+  color: #ffffff;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-button:hover {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.3);
+  transform: translateX(5px);
+}
+
+.nav-button.active {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: #ffd700;
+  color: #ffd700;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.nav-button.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.nav-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+  min-width: 24px;
+  text-align: center;
+}
+
+.nav-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.nav-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.nav-description {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+}
+
+.active-indicator {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: #ffd700;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+  50% { opacity: 0.6; transform: translateY(-50%) scale(1.2); }
+}
+
+/* Collapsed State */
+/* Collapsed styles removed */
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: 1rem;
+  border-top: 2px solid #ffd700;
+  background: #000000; /* solid, non-transparent */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.system-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  background: #00ff00;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  animation: statusBlink 2s ease-in-out infinite;
+}
+
+@keyframes statusBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.status-text {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.8rem;
+  color: #00ff00;
+  font-weight: 600;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+  letter-spacing: 0.1em;
+}
+
+.footer-info {
+  text-align: center;
+}
+
+.footer-info p {
+  font-size: 0.7rem;
+  color: #ffd700;
+  margin: 0.2rem 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.05em;
+}
+
+/* Responsive Design (sidebar width is controlled by :root --sidebar-width in App.css) */
+@media (max-width: 768px) {
+  .sidebar-header { padding: 1rem 0.5rem; }
+  .logo-text { font-size: 1.5rem; }
+  .nav-item { padding: 0 0.5rem; }
+  .nav-button { padding: 0.8rem 0.5rem; }
+  .nav-icon { font-size: 1.2rem; }
+}
+
+@media (max-width: 480px) {
+  .logo-text { font-size: 1.2rem; }
+  .nav-button { padding: 0.6rem 0.3rem; }
+}
