@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
-import { useState } from "react";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import DashBoardPage from "./components/DashBoardPage/DashBoardPage";
@@ -13,13 +12,16 @@ import SettingsPage from "./components/SettingsPage/SettingsPage";
 
 function App() {
   const [user, setUser] = useState(null);
-  const [azureData, setAzureData] = useState(null);
+  const [currentPage, setCurrentPage] = useState("login");
+  const [activePage, setActivePage] = useState("dashboard");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
+      setLoading(false);
     };
 
     getInitialSession();
@@ -28,60 +30,12 @@ function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null);
+        setLoading(false);
       }
     );
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-  };
-
-  const callAzureBackend = async () => {
-    if (!user) {
-      alert("Please sign in first");
-      return;
-    }
-
-    try {
-      const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/users`,
-        {
-          headers: {
-            Authorization: `Bearer ${
-              supabase.auth.session()?.access_token || ""
-            }`,
-          },
-        }
-      );
-      const data = await res.json();
-      setAzureData(data);
-      console.log("Azure backend response:", data);
-    } catch (error) {
-      console.error("Error calling Azure backend:", error);
-      setAzureData({ error: "Failed to connect to Azure database" });
-    }
-  };
-
-  if (user) {
-    return (
-      <div>
-        <h1>MRA Defense Inventory</h1>
-        <p>Welcome, {user.email}!</p>
-        <button onClick={handleSignOut}>Sign Out</button>
-        
-        <div style={{ marginTop: '20px' }}>
-          <button onClick={callAzureBackend}>Call Azure Database</button>
-          {azureData && (
-            <div style={{ marginTop: '10px' }}>
-              <h3>Azure Database Response:</h3>
-              <pre>{JSON.stringify(azureData, null, 2)}</pre>
-            </div>
-          )}
-  const [currentPage, setCurrentPage] = useState("login");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [activePage, setActivePage] = useState("dashboard");
 
   const switchToRegister = () => {
     setCurrentPage("register");
@@ -92,13 +46,12 @@ function App() {
   };
 
   const handleLogin = () => {
-    setIsLoggedIn(true);
     setCurrentPage("dashboard");
     setActivePage("dashboard");
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setCurrentPage("login");
     setActivePage("dashboard");
   };
@@ -107,8 +60,23 @@ function App() {
     setActivePage(pageId);
   };
 
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="App" style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)'
+      }}>
+        <div style={{ color: 'white', fontSize: '18px' }}>Loading...</div>
+      </div>
+    );
+  }
+
   // If user is logged in, show dashboard with sidebar
-  if (isLoggedIn) {
+  if (user) {
     return (
       <div className="App">
         <Sidebar currentPage={activePage} onNavigate={handleNavigation} />
@@ -119,15 +87,11 @@ function App() {
           {activePage === "customers" && <CustomerPage />}
           {activePage === "analytics" && <AnalyticsPage />}
           {activePage === "settings" && <SettingsPage />}
-
         </div>
       </div>
     );
   }
 
-  return (
-    <div>
-      <Login />
   // If user is not logged in, show login/register
   return (
     <div className="App">

@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { supabase } from "../supabaseClient";
 import "./Register.css";
 
 export default function Register({ onSwitchToLogin, onRegister }) {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -11,40 +13,49 @@ export default function Register({ onSwitchToLogin, onRegister }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setMessage("");
     
-    // Basic validation for demo purposes
+    // Basic validation
     if (!form.username || !form.email || !form.password) {
       setMessage("All fields are required for enlistment");
+      setLoading(false);
       return;
     }
     
     if (form.password.length < 6) {
       setMessage("Password must be at least 6 characters long");
+      setLoading(false);
       return;
     }
     
-    // Simulate successful registration
-    setMessage("Enlistment successful! Welcome to the force, " + form.username + "!");
-    console.log("Registered user:", { username: form.username, email: form.email });
-    
-    // Simulate successful registration and redirect to dashboard
-    setTimeout(() => {
-      if (onRegister) onRegister();
-    }, 1500);
-    
-    // Original API call (commented out for now)
-    /*
     try {
-      const res = await api.post("/register", form);
-      setMessage(res.data.message);
-      console.log("Registered user:", res.data.user);
-      setTimeout(() => {
-        if (onRegister) onRegister();
-      }, 1000);
+      const { data, error } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+        options: {
+          data: {
+            username: form.username,
+          }
+        }
+      });
+
+      if (error) {
+        setMessage(error.message);
+      } else {
+        setMessage("Enlistment successful! Please check your email to verify your account.");
+        console.log("Registered user:", data.user);
+        
+        // Redirect to dashboard after successful registration
+        setTimeout(() => {
+          if (onRegister) onRegister();
+        }, 2000);
+      }
     } catch (err) {
-      setMessage(err.response?.data?.error || "Registration failed");
+      setMessage("An unexpected error occurred during registration");
+    } finally {
+      setLoading(false);
     }
-    */
   };
 
   return (
@@ -97,8 +108,10 @@ export default function Register({ onSwitchToLogin, onRegister }) {
               />
             </div>
             
-            <button type="submit" className="military-button">
-              <span className="button-text">ENLIST NOW</span>
+            <button type="submit" className="military-button" disabled={loading}>
+              <span className="button-text">
+                {loading ? "ENLISTING..." : "ENLIST NOW"}
+              </span>
               <div className="button-accent"></div>
             </button>
           </form>

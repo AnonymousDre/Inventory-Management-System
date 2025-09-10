@@ -245,6 +245,18 @@
   left: 100%;
 }
 
+.military-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.military-button:disabled:hover {
+  background: linear-gradient(45deg, #2d5016, #3d6b1a, #2d5016);
+  box-shadow: none;
+  transform: none;
+}
+
 .message {
   margin-top: 1rem;
   padding: 0.8rem;
