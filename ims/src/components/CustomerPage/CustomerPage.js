@@ -1,53 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./CustomerPage.css";
+import { supabase } from "../../supabaseClient";
 
-// --- Mock Data ---
-const customersData = [
-  {
-    id: "CUST-001",
-    name: "Blackwood PMC",
-    contactPerson: "Gen. Aleksandr Voron",
-    email: "procurement@blackwood-pmc.com",
-    phone: "+1-202-555-0173",
-    registrationDate: "2023-05-20",
-    totalOrders: 8,
-    totalSpent: 4215000,
-    status: "Active",
-  },
-  {
-    id: "CUST-002",
-    name: "Aegis Security",
-    contactPerson: "Maria Thorne",
-    email: "m.thorne@aegis-sec.net",
-    phone: "+44-20-7946-0958",
-    registrationDate: "2024-01-15",
-    totalOrders: 12,
-    totalSpent: 3160,
-    status: "Active",
-  },
-  {
-    id: "CUST-003",
-    name: "Gen-IV Dynamics",
-    contactPerson: "Dr. Aris Thorne",
-    email: "aris.t@gen-iv.tech",
-    phone: "+81-3-4567-8901",
-    registrationDate: "2024-08-01",
-    totalOrders: 1,
-    totalSpent: 4203200,
-    status: "On Watchlist",
-  },
-  {
-    id: "CUST-004",
-    name: "Red Sector Group",
-    contactPerson: "Unknown",
-    email: "contact@redsector.inf",
-    phone: "CLASSIFIED",
-    registrationDate: "2022-11-30",
-    totalOrders: 3,
-    totalSpent: 12800,
-    status: "Restricted",
-  },
-];
+// Data will be fetched from Supabase
 
 // --- Helper Functions ---
 const formatCurrency = (amount) =>
@@ -59,16 +14,66 @@ const formatDate = (dateString) =>
 export default function CustomersPage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+
+  const fetchCustomers = async () => {
+    setLoading(true);
+    setErr("");
+    const { data, error } = await supabase
+      .from("customers")
+      .select("*")
+      .order("company", { ascending: true });
+    if (error) {
+      setErr(error.message);
+      setRows([]);
+    } else {
+      setRows(data || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchCustomers();
+    const channel = supabase
+      .channel("customers-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "customers" },
+        () => fetchCustomers()
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const customers = useMemo(() => {
+    return (rows || []).map((r) => ({
+      id: r.id,
+      name: r.company || r.full_name || r.name || "",
+      contactPerson: r.representative || r.contact_person || r.contactPerson || r.primary_contact || "",
+      // email intentionally omitted from UI per request
+      phone: r.phone || "",
+      country: r.country || "",
+      registrationDate: r.registrationDate || r.client_since || r.signup_date || null,
+      totalOrders: r.total_orders ?? r.totalOrders ?? 0,
+      totalSpent: r.total_spent ?? r.totalSpent ?? 0,
+      status: (r.status || "Active").toString(),
+    }));
+  }, [rows]);
 
   const filteredCustomers = useMemo(() => {
-    return customersData.filter((customer) => {
+    return customers.filter((customer) => {
       const matchesQuery = `${customer.id} ${customer.name} ${customer.contactPerson}`
         .toLowerCase()
         .includes(query.toLowerCase());
       const matchesFilter = statusFilter === "all" ? true : customer.status.toLowerCase() === statusFilter;
       return matchesQuery && matchesFilter;
     });
-  }, [query, statusFilter]);
+  }, [customers, query, statusFilter]);
 
   return (
     <div className="military-customers-container">
@@ -96,6 +101,13 @@ export default function CustomersPage() {
         </div>
       </header>
 
+      {err && (
+        <div style={{ color: "salmon", padding: "8px 16px" }}>Error: {err}</div>
+      )}
+      {loading && (
+        <div style={{ padding: "8px 16px" }}>Loading customers...</div>
+      )}
+      {!loading && (
       <main className="customers-content">
         <div className="customers-grid">
           {filteredCustomers.map((customer) => (
@@ -109,8 +121,8 @@ export default function CustomersPage() {
               <div className="customer-details">
                 <p><strong>ID:</strong> {customer.id}</p>
                 <p><strong>Contact:</strong> {customer.contactPerson}</p>
-                <p><strong>Email:</strong> {customer.email}</p>
                 <p><strong>Phone:</strong> {customer.phone}</p>
+                <p><strong>Country:</strong> {customer.country}</p>
               </div>
               <div className="customer-stats">
                 <div className="stat-item">
@@ -134,6 +146,7 @@ export default function CustomersPage() {
           ))}
         </div>
       </main>
+      )}
     </div>
   );
 }
