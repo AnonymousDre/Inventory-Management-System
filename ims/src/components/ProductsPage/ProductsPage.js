@@ -1,109 +1,65 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./ProductsPage.css";
+import { supabase } from "../../supabaseClient";
 
 export default function ProductsPage() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    sku: "",
+    category: "gear",
+    price: "",
+    stock: "",
+    image: "",
+    status: "active",
+  });
 
-  const products = useMemo(
-    () => [
-      {
-        id: "nuke-001",
-        name: "Strategic Warhead Mk IV",
-        category: "nuclear",
-        price: 12500000,
-        stock: 2,
-        sku: "SWMK4-NUC",
-        status: "restricted",
-        image: "☢️",
-      },
-      {
-        id: "nuke-003",
-        name: "Strategic Warhead Mk III",
-        category: "nuclear",
-        price: 10000000,
-        stock: 2,
-        sku: "SWMK4-NUC",
-        status: "restricted",
-        image: "☢️",
-      },
-      {
-        id: "nuke-002",
-        name: "Tactical Nuclear Device",
-        category: "nuclear",
-        price: 4200000,
-        stock: 5,
-        sku: "TND-021",
-        status: "restricted",
-        image: "☢️",
-      },
-      {
-        id: "ammo-556",
-        name: "5.56×45mm NATO (1,000 rds)",
-        category: "ammo",
-        price: 780,
-        stock: 180,
-        sku: "AM-556-1K",
-        status: "active",
-        image: "🔰",
-      },
-      {
-        id: "ammo-762",
-        name: "7.62×51mm NATO (1,000 rds)",
-        category: "ammo",
-        price: 1190,
-        stock: 95,
-        sku: "AM-762-1K",
-        status: "active",
-        image: "🔰",
-      },
-      {
-        id: "gun-m4",
-        name: "M4 Carbine",
-        category: "firearm",
-        price: 1450,
-        stock: 42,
-        sku: "FG-M4",
-        status: "active",
-        image: "🔫",
-      },
-      {
-        id: "gun-m9",
-        name: "M9 Service Pistol",
-        category: "firearm",
-        price: 620,
-        stock: 120,
-        sku: "FG-M9",
-        status: "active",
-        image: "🔫",
-      },
-      {
-        id: "gear-nvg",
-        name: "Gen-3 Night Vision Goggles",
-        category: "gear",
-        price: 3200,
-        stock: 34,
-        sku: "GE-NVG3",
-        status: "active",
-        image: "🎯",
-      },
-      {
-        id: "gear-plate",
-        name: "Ballistic Plate Carrier (Level IV)",
-        category: "gear",
-        price: 540,
-        stock: 60,
-        sku: "GE-PLT4",
-        status: "active",
-        image: "🛡️",
-      },
-    ],
-    []
-  );
+  const fetchProducts = async () => {
+    setLoading(true);
+    setErr("");
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("category", { ascending: true })
+      .order("name", { ascending: true });
+
+    if (error) {
+      setErr(error.message);
+    } else {
+      setProducts(data || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    // Realtime subscribe to any products change
+    const channel = supabase
+      .channel("products-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "products" },
+        () => {
+          fetchProducts();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const filtered = useMemo(() => {
-    return products.filter((p) => {
-      const matchesQuery = `${p.name} ${p.sku}`
+    return (products || []).filter((p) => {
+      const matchesQuery = `${p.name ?? ""} ${p.sku ?? ""}`
         .toLowerCase()
         .includes(query.toLowerCase());
       const matchesFilter = filter === "all" ? true : p.category === filter;
@@ -120,8 +76,57 @@ export default function ProductsPage() {
 
   const formatCurrency = (amount) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
-      amount
+      amount ?? 0
     );
+
+  const openAdd = () => setIsAddOpen(true);
+  const closeAdd = () => {
+    setIsAddOpen(false);
+    setSaving(false);
+    setForm({ name: "", sku: "", category: "gear", price: "", stock: "", image: "", status: "active" });
+  };
+
+  const submitAdd = async (e) => {
+    e.preventDefault();
+    if (saving) return;
+    setSaving(true);
+    const price = Number(form.price || 0);
+    const stock = parseInt(form.stock || "0", 10);
+    const payload = {
+      name: form.name.trim(),
+      sku: form.sku.trim(),
+      category: form.category,
+      price,
+      stock,
+      status: form.status || "active",
+      image: form.image || null,
+    };
+    const { error } = await supabase.from("products").insert([payload]);
+    if (error) {
+      alert(`Add failed: ${error.message}`);
+      setSaving(false);
+      return;
+    }
+    closeAdd();
+    fetchProducts();
+  };
+
+  const handleRestock = async (product) => {
+    const incStr = prompt("Increase stock by:", "1");
+    const inc = parseInt(incStr || "0", 10);
+    if (!Number.isFinite(inc) || inc <= 0) return;
+
+    const { error } = await supabase
+      .from("products")
+      .update({ stock: (product.stock || 0) + inc })
+      .eq("id", product.id);
+
+    if (error) {
+      alert(`Restock failed: ${error.message}`);
+    } else {
+      fetchProducts();
+    }
+  };
 
   return (
     <div className="military-products-container">
@@ -147,52 +152,119 @@ export default function ProductsPage() {
             <option value="ammo">Ammo</option>
             <option value="gear">Gear</option>
           </select>
-          <button className="add-button">
+          <button className="add-button" onClick={openAdd}>
             <span>ADD PRODUCT</span>
           </button>
         </div>
       </header>
 
-      <main className="products-sections">
-        {categoriesInOrder.map((cat) => {
-          const items = filtered.filter((p) => p.category === cat.id);
-          if (items.length === 0) return null;
-          return (
-            <section key={cat.id} className="category-section">
-              <h2 className="category-title">{cat.title}</h2>
-              <div className="products-grid">
-                {items.map((p) => (
-                  <div key={p.id} className={`product-card ${p.status}`}>
-                    <div className="product-badge">{p.image}</div>
-                    <div className="product-body">
-                      <div className="product-header">
-                        <h3 className="product-name">{p.name}</h3>
-                        <span className={`category-tag ${p.category}`}>{p.category}</span>
+      {isAddOpen && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <div style={{ background: "#0f172a", color: "#e2e8f0", padding: 20, borderRadius: 12, width: "min(520px, 92vw)", boxShadow: "0 10px 30px rgba(0,0,0,0.6)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h3 style={{ margin: 0 }}>Add Product</h3>
+              <button onClick={closeAdd} style={{ background: "transparent", color: "#94a3b8", border: 0, fontSize: 22, cursor: "pointer" }}>×</button>
+            </div>
+            <form onSubmit={submitAdd}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span>Name</span>
+                  <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g., M4 Carbine" style={{ padding: 10, borderRadius: 8, border: "1px solid #334155", background: "#0b1220", color: "#e2e8f0" }} />
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span>SKU</span>
+                  <input required value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} placeholder="e.g., FG-M4" style={{ padding: 10, borderRadius: 8, border: "1px solid #334155", background: "#0b1220", color: "#e2e8f0" }} />
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span>Category</span>
+                  <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} style={{ padding: 10, borderRadius: 8, border: "1px solid #334155", background: "#0b1220", color: "#e2e8f0" }}>
+                    <option value="nuclear">nuclear</option>
+                    <option value="firearm">firearm</option>
+                    <option value="ammo">ammo</option>
+                    <option value="gear">gear</option>
+                  </select>
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span>Price</span>
+                  <input type="number" min="0" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="e.g., 1450" style={{ padding: 10, borderRadius: 8, border: "1px solid #334155", background: "#0b1220", color: "#e2e8f0" }} />
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span>Stock</span>
+                  <input type="number" min="0" step="1" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} placeholder="e.g., 10" style={{ padding: 10, borderRadius: 8, border: "1px solid #334155", background: "#0b1220", color: "#e2e8f0" }} />
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span>Image URL or Emoji</span>
+                  <input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://... or 🔫" style={{ padding: 10, borderRadius: 8, border: "1px solid #334155", background: "#0b1220", color: "#e2e8f0" }} />
+                </label>
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+                <button type="button" onClick={closeAdd} style={{ padding: "10px 14px", borderRadius: 8, border: "1px solid #334155", background: "transparent", color: "#cbd5e1", cursor: "pointer" }}>Cancel</button>
+                <button type="submit" disabled={saving} style={{ padding: "10px 14px", borderRadius: 8, border: 0, background: saving ? "#475569" : "#22c55e", color: "#0b1220", fontWeight: 700, cursor: saving ? "not-allowed" : "pointer" }}>{saving ? "Saving..." : "Save"}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {err && (
+        <div style={{ color: "salmon", padding: "8px 16px" }}>
+          Error: {err}
+        </div>
+      )}
+      {loading && (
+        <div style={{ padding: "8px 16px" }}>
+          Loading products...
+        </div>
+      )}
+
+      {!loading && (
+        <main className="products-sections">
+          {categoriesInOrder.map((cat) => {
+            const items = filtered.filter((p) => p.category === cat.id);
+            if (items.length === 0) return null;
+            return (
+              <section key={cat.id} className="category-section">
+                <h2 className="category-title">{cat.title}</h2>
+                <div className="products-grid">
+                  {items.map((p) => (
+                    <div key={p.id} className={`product-card ${p.status || "active"}`}>
+                      <div className="product-badge">
+                        {typeof p.image === "string" && /^https?:\/\//i.test(p.image) ? (
+                          <img src={p.image} alt={p.name} style={{ width: 110, height: 110, objectFit: "contain", borderRadius: 8 }} />
+                        ) : (
+                          p.image || "🧰"
+                        )}
                       </div>
-                      <div className="product-meta">
-                        <span className="sku">SKU: {p.sku}</span>
-                        <span className={`stock ${p.stock <= 5 ? "low" : "ok"}`}>
-                          {p.stock <= 5 ? "LOW STOCK" : `${p.stock} in stock`}
-                        </span>
-                      </div>
-                      <div className="product-footer">
-                        <span className="price">{formatCurrency(p.price)}</span>
-                        <div className="actions">
-                          <button className="edit">EDIT</button>
-                          <button className="restock">RESTOCK</button>
+                      <div className="product-body">
+                        <div className="product-header">
+                          <h3 className="product-name">{p.name}</h3>
+                          <span className={`category-tag ${p.category}`}>{p.category}</span>
+                        </div>
+                        <div className="product-meta">
+                          <span className="sku">SKU: {p.sku}</span>
+                          <span className={`stock ${(p.stock || 0) <= 5 ? "low" : "ok"}`}>
+                            {(p.stock || 0) <= 5 ? "LOW STOCK" : `${p.stock} in stock`}
+                          </span>
+                        </div>
+                        <div className="product-footer">
+                          <span className="price">{formatCurrency(p.price)}</span>
+                          <div className="actions">
+                            <button className="edit" onClick={() => alert("TODO: edit dialog")}>EDIT</button>
+                            <button className="restock" onClick={() => handleRestock(p)}>RESTOCK</button>
+                          </div>
                         </div>
                       </div>
+                      {p.status === "restricted" && (
+                        <div className="restricted-banner">RESTRICTED</div>
+                      )}
                     </div>
-                    {p.status === "restricted" && (
-                      <div className="restricted-banner">RESTRICTED</div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          );
-        })}
-      </main>
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+        </main>
+      )}
     </div>
   );
 }
