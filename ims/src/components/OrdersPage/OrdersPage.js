@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./OrdersPage.css";
+import { supabase } from "../../supabaseClient";
 
 // --- Helper Functions ---
 const formatCurrency = (amount) =>
@@ -10,63 +11,72 @@ const formatDate = (dateString) =>
     year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
   });
 
-// --- Mock Data ---
-const ordersData = [
-  {
-    orderId: "ORD-7B3C1A",
-    customer: "Blackwood PMC",
-    date: "2025-09-08T14:30:00Z",
-    total: 1450,
-    status: "Shipped",
-    itemCount: 1,
-  },
-  {
-    orderId: "ORD-9F2D5E",
-    customer: "Aegis Security",
-    date: "2025-09-07T10:15:00Z",
-    total: 2380,
-    status: "Delivered",
-    itemCount: 2,
-  },
-    {
-    orderId: "ORD-1A8G9H",
-    customer: "Gen-IV Dynamics",
-    date: "2025-09-09T11:00:00Z",
-    total: 4203200,
-    status: "Processing",
-    itemCount: 2,
-  },
-  {
-    orderId: "ORD-5K4M2N",
-    customer: "Red Sector Group",
-    date: "2025-09-05T18:45:00Z",
-    total: 540,
-    status: "Cancelled",
-    itemCount: 1,
-  },
-  {
-    orderId: "ORD-3J1P7Q",
-    customer: "Aegis Security",
-    date: "2025-09-08T09:00:00Z",
-    total: 780,
-    status: "Delivered",
-    itemCount: 1,
-  },
-];
+// --- Data from Supabase ---
+// This page expects a table named `orders`.
+// It supports common column names via normalization: id/order_id, customer/customer_name,
+// created_at/date, total/amount_total, item_count/items_count, status.
 
 export default function OrdersPage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [ordersRaw, setOrdersRaw] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    setErr("");
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .order("date", { ascending: false });
+    if (error) {
+      setErr(error.message);
+      setOrdersRaw([]);
+    } else {
+      setOrdersRaw(data || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchOrders();
+    // Realtime updates
+    const channel = supabase
+      .channel("orders-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders" },
+        () => fetchOrders()
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const orders = useMemo(() => {
+    return (ordersRaw || []).map((o) => {
+      const orderId = o.id;
+      const customer = o.customer_id; // render ID; join later if needed
+      const date = o.date;
+      const total = Number(o.total ?? 0);
+      const status = (o.status || "processing").toString();
+      const itemCount = Number(o.items_ordered ?? 0);
+      return { orderId, customer, date, total, status, itemCount };
+    });
+  }, [ordersRaw]);
 
   const filteredOrders = useMemo(() => {
-    return ordersData.filter((order) => {
+    return orders.filter((order) => {
       const matchesQuery = `${order.orderId} ${order.customer}`
         .toLowerCase()
         .includes(query.toLowerCase());
       const matchesFilter = statusFilter === "all" ? true : order.status.toLowerCase() === statusFilter;
       return matchesQuery && matchesFilter;
     });
-  }, [query, statusFilter]);
+  }, [orders, query, statusFilter]);
 
   return (
     <div className="military-orders-container">
@@ -95,6 +105,13 @@ export default function OrdersPage() {
         </div>
       </header>
 
+      {err && (
+        <div style={{ color: "salmon", padding: "8px 16px" }}>Error: {err}</div>
+      )}
+      {loading && (
+        <div style={{ padding: "8px 16px" }}>Loading orders...</div>
+      )}
+      {!loading && (
       <main className="orders-content">
         <div className="table-container">
           <table className="orders-table">
@@ -133,6 +150,7 @@ export default function OrdersPage() {
           </table>
         </div>
       </main>
+      )}
     </div>
   );
 }
