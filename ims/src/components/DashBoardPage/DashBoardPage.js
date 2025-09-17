@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import "./DashBoardPage.css";
+import { supabase } from "../../supabaseClient";
 
 export default function DashBoardPage({ onLogout }) {
-  const [user] = useState({ name: "Commander" });
+  const [userName, setUserName] = useState("Commander");
   const [metrics, setMetrics] = useState({
     totalSales: 125430,
     totalVolume: 2847,
@@ -22,6 +23,26 @@ export default function DashBoardPage({ onLogout }) {
   ]);
 
   useEffect(() => {
+    let mounted = true;
+    const syncUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!mounted) return;
+      const u = data?.user;
+      if (u) {
+        const metaName = u.user_metadata?.username;
+        const emailName = (u.email || "").split("@")[0];
+        setUserName((metaName || emailName || "Commander"));
+      } else {
+        setUserName("Commander");
+      }
+    };
+    syncUser();
+    const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
+      const u = session?.user;
+      const metaName = u?.user_metadata?.username;
+      const emailName = (u?.email || "").split("@")[0];
+      setUserName(u ? (metaName || emailName || "Commander") : "Commander");
+    });
     // Simulate real-time data updates
     const interval = setInterval(() => {
       setMetrics(prev => ({
@@ -31,7 +52,7 @@ export default function DashBoardPage({ onLogout }) {
       }));
     }, 5000);
 
-    return () => clearInterval(interval);
+    return () => { clearInterval(interval); mounted = false; sub?.subscription?.unsubscribe(); };
   }, []);
 
   const formatCurrency = (amount) => {
@@ -59,7 +80,7 @@ export default function DashBoardPage({ onLogout }) {
           <div className="user-section">
             <div className="user-info">
               <span className="welcome-text">WELCOME BACK,</span>
-              <span className="user-name">{user.name.toUpperCase()}</span>
+              <span className="user-name">{userName.toUpperCase()}</span>
             </div>
             <button className="logout-button" onClick={onLogout}>
               <span className="button-text">STAND DOWN</span>
