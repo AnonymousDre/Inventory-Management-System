@@ -30,6 +30,7 @@ export default function OrdersPage() {
       .from("orders")
       .select("*")
       .order("date", { ascending: false });
+    console.log("orders fetch:", { data, error });
     if (error) {
       setErr(error.message);
       setOrdersRaw([]);
@@ -113,6 +114,7 @@ export default function OrdersPage() {
       )}
       {!loading && (
       <main className="orders-content">
+        <div style={{ padding: "8px 16px" }}>Loaded orders: {orders.length}</div>
         <div className="table-container">
           <table className="orders-table">
             <thead>
@@ -123,7 +125,6 @@ export default function OrdersPage() {
                 <th>Status</th>
                 <th>Items</th>
                 <th>Total</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -139,11 +140,6 @@ export default function OrdersPage() {
                   </td>
                   <td>{order.itemCount}</td>
                   <td>{formatCurrency(order.total)}</td>
-                  <td>
-                    <div className="actions">
-                      <button className="details-btn">VIEW DETAILS</button>
-                    </div>
-                  </td>
                 </tr>
               ))}
             </tbody>
