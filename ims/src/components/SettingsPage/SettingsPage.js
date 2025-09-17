@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./SettingsPage.css";
+import { supabase } from "../../supabaseClient";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("account");
@@ -12,6 +13,47 @@ export default function SettingsPage() {
     theme: "default",
     dataDensity: "compact",
   });
+  const [authUser, setAuthUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!mounted) return;
+      setAuthUser(data?.user ?? null);
+      setAuthLoading(false);
+      // If we have a user, prefill settings fields
+      if (data?.user) {
+        setSettings((prev) => ({
+          ...prev,
+          username: data.user.user_metadata?.username || prev.username,
+          email: data.user.email || prev.email,
+        }));
+      }
+    };
+    load();
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAuthUser(session?.user ?? null);
+      if (session?.user) {
+        setSettings((prev) => ({
+          ...prev,
+          username: session.user.user_metadata?.username || prev.username,
+          email: session.user.email || prev.email,
+        }));
+      }
+    });
+
+    return () => {
+      mounted = false;
+      sub?.subscription?.unsubscribe();
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
 
   const handleSettingChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -28,17 +70,31 @@ export default function SettingsPage() {
           <div className="settings-section">
             <h3 className="section-title">User Account</h3>
             <div className="form-group">
+              {authLoading ? (
+                <div className="settings-hint">Checking authentication...</div>
+              ) : authUser ? (
+                <div className="settings-hint">Signed in as <strong>{authUser.email}</strong> (ID: {authUser.id})</div>
+              ) : (
+                <div className="settings-hint" style={{ color: "#fca5a5" }}>Not signed in</div>
+              )}
+            </div>
+            <div className="form-group">
               <label htmlFor="username">Username</label>
               <input type="text" id="username" name="username" value={settings.username} onChange={handleSettingChange} className="settings-input" />
             </div>
             <div className="form-group">
               <label htmlFor="email">Email Address</label>
-              <input type="email" id="email" name="email" value={settings.email} onChange={handleSettingChange} className="settings-input" />
+              <input type="email" id="email" name="email" value={settings.email} onChange={handleSettingChange} className="settings-input" readOnly={!!authUser} />
             </div>
              <div className="form-group">
                 <label>Password</label>
                 <button className="settings-btn secondary">Change Password</button>
             </div>
+            {authUser && (
+              <div className="form-group">
+                <button className="settings-btn danger" onClick={handleSignOut}>Sign Out</button>
+              </div>
+            )}
           </div>
         );
       case "notifications":
